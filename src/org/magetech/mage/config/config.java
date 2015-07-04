@@ -54,4 +54,18 @@ public class config {
 	public void setDownloadLocation(String downloadLocation) {
 		DownloadLocation = downloadLocation;
 	}
+	
+	/**
+	 * checks if two configs are equal to each other
+	 * @param newConfig the other config
+	 * @return true if equal false if not
+	 */
+	public boolean equals(config newConfig){
+		if(versionNumber.equals(newConfig.versionNumber)){
+			if(DownloadLocation.equals(newConfig.DownloadLocation)){
+				return true;
+			}
+		}
+		return false;
+	}
 }
