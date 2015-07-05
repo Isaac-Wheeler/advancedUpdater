@@ -39,8 +39,8 @@ public class Main {
 			System.exit(1);
 		}
 
-		int Minutes = Integer.parseInt(args[0]);
-		final int milli =  100 * Minutes;
+		int hours = Integer.parseInt(args[0]);
+		final int milli =  3600000 * hours;
 		final Gson gson = new Gson();
 		BufferedReader br = null;
 		// TODO: Relocate to better location

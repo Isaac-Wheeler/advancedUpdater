@@ -33,7 +33,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>org.magetech.mage.common.main</mainClass>
+							<mainClass>org.magetech.mage.common.Main</mainClass>
 							<classpathPrefix>dependency-jars/</classpathPrefix>
 						</manifest>
 					</archive>
@@ -67,7 +67,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>org.magetech.mage.common.main</mainClass>
+							<mainClass>org.magetech.mage.common.Main</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
