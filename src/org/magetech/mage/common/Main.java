@@ -11,8 +11,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.apache.commons.io.FileUtils;
 import org.magetech.mage.config.config;
+import org.magetech.mage.launch.ServerInput;
 import org.magetech.mage.launch.launch;
 
 import com.google.gson.Gson;
@@ -25,6 +27,7 @@ public class Main {
 
 	private static config Config;
 	private static String Temp;
+	private static launch launch;
 
 	/**
 	 * @param args
@@ -37,7 +40,7 @@ public class Main {
 		}
 
 		int Minutes = Integer.parseInt(args[0]);
-		final int milli = 60000 * Minutes;
+		final int milli =  100 * Minutes;
 		final Gson gson = new Gson();
 		BufferedReader br = null;
 		// TODO: Relocate to better location
@@ -58,12 +61,12 @@ public class Main {
 			}else{
 				Temp = "";
 			}
+			launch = new launch();
+			launch.startupControlPanel(Temp);
 			
-
 			Thread thread = new Thread() {
 				public void run() {
 					while (true) {
-						launch launch = new launch();
 						try {
 							BufferedReader br = read("http://testbed.mage-tech.org"
 									+ ":8080/job/control%20panel/"
@@ -72,13 +75,10 @@ public class Main {
 							config newConfig = gson.fromJson(br, config.class);
 
 							if (!(Config.equals(newConfig))) {
+								System.out.println("updateing");
 								Config = newConfig;
-								String data = "Stop";
-								InputStream Input = new ByteArrayInputStream(
-										data.getBytes("UTF-8"));
-								System.setIn(Input);
-								System.setIn(Input);
-
+								launch.getControlPanel().destroyForcibly();
+								System.out.println("waiting");
 								launch.getControlPanel().waitFor();
 
 								File controlPanel = new File("controlPanel.jar");
@@ -91,7 +91,14 @@ public class Main {
 										new URL(Config.getDownloadLocation()),
 										controlPanel);
 							}
-							launch.startupControlPanel(Temp);
+							
+							
+							if(!launch.getControlPanel().isAlive()){
+								launch.startupControlPanel(Temp);
+							}
+							
+							
+							
 							Thread.sleep(milli);
 
 						} catch (IOException e) {
@@ -106,14 +113,30 @@ public class Main {
 					}
 				}
 			};
-
 			thread.start();
+			
+			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+				public void run() {
+					launch.getControlPanel().destroyForcibly();
+					try {
+						launch.getControlPanel().waitFor();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			}, "Shutdown-thread"));
+			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 	}
